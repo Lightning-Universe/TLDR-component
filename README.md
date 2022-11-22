@@ -1,8 +1,36 @@
-# TL;DR - Text Summarization with Lightning
+<div align="center">
+    <h1>
+        <img src="https://lightningaidev.wpengine.com/wp-content/uploads/2022/11/image-6.png">
+        <br>
+        TL;DR with Lightning
+        </br>
+    </h1>
 
-The TLDR component allows you to pre-train or fine-tune a language model for text-summarization, 
-with as many parameters as you want (billions), using multiple GPUs, across multiple machines, 
-on your own data, and all without any infrastructure hassle!
+<div align="center">
+
+<p align="center">
+  <a href="#run">Run</a> •
+  <a href="https://www.lightning.ai/">Lightning AI</a> •
+  <a href="https://lightning.ai/lightning-docs/">Docs</a> •
+</p>
+
+[![ReadTheDocs](https://readthedocs.org/projects/pytorch-lightning/badge/?version=stable)](https://lightning.ai/lightning-docs/)
+[![Slack](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://www.pytorchlightning.ai/community)
+[![license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/Lightning-AI/lightning/blob/master/LICENSE)
+
+</div>
+</div>
+
+______________________________________________________________________
+
+Use TLDR component to pre-train or fine-tune a large language model for text-summarization, 
+with as many parameters as you want (up to billions), using multiple GPUs, across multiple machines, 
+on your own data, and all without any infrastructure hassle! All handled easily with the [Lightning Apps framework](https://lightning.ai/lightning-docs/).
+
+## Run
+
+To run this app, paste the following code snippet in a file `app.py`:
+
 
 ```python
 # !pip install 'git+https://github.com/Lightning-AI/LAI-TLDR'
@@ -44,10 +72,17 @@ app = L.LightningApp(
 
 
 ```
-Paste the above code snippet in a file `app.py` and run it in the cloud:
 
-```commandline
+### Running locally
+
+```bash
+lightning run app app.py --setup
+```
+
+### Running on cloud
+
+```bash
 lightning run app app.py --setup --cloud
 ```
 
-Don't want to use the public cloud? Contact us at `support@lightning.ai` for alpha access to run on your private cluster (BYOC)!
+Don't want to use the public cloud? Contact us at `product@lightning.ai` for early access to run on your private cluster (BYOC)!
