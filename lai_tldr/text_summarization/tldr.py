@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Tuple, Any
 import torch.nn as nn
 import lightning as L
-from llm_components.text_summarization.text_summarization import TextSummarization, TextSummarizationDataModule
+from lai_tldr.text_summarization.text_summarization import TextSummarization, TextSummarizationDataModule
 
 
 class TLDR(L.LightningWork, ABC):
@@ -35,7 +35,7 @@ class TLDR(L.LightningWork, ABC):
             monitor="val_loss",
             mode="min",
         )
-        return dict(max_epochs=2, limit_train_batches=1, limit_val_batches=1, callbacks=[early_stopping, checkpoints], strategy="ddp_find_unused_parameters_false")
+        return dict(max_epochs=100, callbacks=[early_stopping, checkpoints], strategy="ddp_find_unused_parameters_false")
 
     def run(self):
         # for huggingface/transformers
