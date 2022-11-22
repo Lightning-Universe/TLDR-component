@@ -204,12 +204,10 @@ class TextSummarization(LightningModule):
         self,
         model,
         tokenizer,
-        outputdir: str = "outputs",
     ):
         super().__init__()
         self.model = model
         self.tokenizer = tokenizer
-        self.outputdir = outputdir
         self.average_training_loss = None
         self.average_validation_loss = None
         self.save_only_last_epoch = False
@@ -283,21 +281,6 @@ class TextSummarization(LightningModule):
     def configure_optimizers(self):
         """configure optimizers"""
         return AdamW(self.parameters(), lr=0.0001)
-
-    def training_epoch_end(self, training_step_outputs):
-        """save tokenizer and model on epoch end"""
-        self.average_training_loss = np.round(
-            torch.mean(torch.stack([x["loss"] for x in training_step_outputs])).item(),
-            4,
-        )
-        path = f"{self.outputdir}/simplet5-epoch-{self.current_epoch}-train-loss-{str(self.average_training_loss)}-val-loss-{str(self.average_validation_loss)}"
-        if self.save_only_last_epoch:
-            if self.current_epoch == self.trainer.max_epochs - 1:
-                self.tokenizer.save_pretrained(path)
-                self.model.save_pretrained(path)
-        else:
-            self.tokenizer.save_pretrained(path)
-            self.model.save_pretrained(path)
 
     def validation_epoch_end(self, validation_step_outputs):
         _loss = [x.cpu() for x in validation_step_outputs]

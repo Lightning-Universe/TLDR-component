@@ -2,7 +2,7 @@
 # !pip install 'torch>=1.7.0,!=1.8.0'
 # !pip install 'lightning>=1.8.2,<1.8.3'
 # !pip install 'git+https://github.com/Lightning-AI/LAI-LLM-components@training'
-
+import os
 from typing import Any, Tuple
 import torch.nn as nn
 import lightning as L
@@ -42,7 +42,7 @@ class MyTLDR(TLDR):
 app = L.LightningApp(
     LightningTrainerMultiNode(
         MyTLDR,
-        num_nodes=2,
+        num_nodes=1,
         cloud_compute=L.CloudCompute("gpu", disk_size=50),
     )
 )

@@ -1,3 +1,5 @@
+import glob
+import os
 from abc import ABC, abstractmethod
 from typing import Tuple, Any
 import torch.nn as nn
@@ -10,7 +12,7 @@ class TLDR(L.LightningWork, ABC):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.checkpoints = L.app.storage.Drive("lit://checkpoints")
+        self.drive = L.app.storage.Drive("lit://artifacts")
 
     @abstractmethod
     def get_model(self) -> Tuple[nn.Module, Any]:
@@ -29,14 +31,17 @@ class TLDR(L.LightningWork, ABC):
             mode="min",
         )
         checkpoints = L.pytorch.callbacks.ModelCheckpoint(
-            dirpath="checkpoints",
+            # dirpath="drive",
             save_top_k=3,
             monitor="val_loss",
             mode="min",
         )
-        return dict(max_epochs=5, limit_train_batches=10, limit_val_batches=10, callbacks=[early_stopping, checkpoints], strategy="ddp_find_unused_parameters_false")
+        return dict(max_epochs=2, limit_train_batches=1, limit_val_batches=1, callbacks=[early_stopping, checkpoints], strategy="ddp_find_unused_parameters_false")
 
     def run(self):
+        # for huggingface/transformers
+        os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
         module, tokenizer = self.get_model()
         pl_module = TextSummarization(model=module, tokenizer=tokenizer)
         datamodule = TextSummarizationDataModule(data_source=self.get_data_source(), tokenizer=tokenizer)
@@ -46,6 +51,10 @@ class TLDR(L.LightningWork, ABC):
         self._trainer = trainer
 
         trainer.fit(pl_module, datamodule)
-        #
-        # print("DEBUG: putting files in drive")
-        # self.checkpoints.put("./checkpoints")
+
+        items = list(glob.glob("lightning_logs/**", recursive=True))
+        for item in items:
+            if not os.path.isfile(item):
+                continue
+            print("file: ", item)
+            self.drive.put(item)
