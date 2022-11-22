@@ -1,0 +1,7 @@
+numpy
+pandas
+sentencepiece
+torch
+transformers==4.16.2
+scikit-learn
+lightning
