@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Tuple, Any
 import torch.nn as nn
 import lightning as L
-from components.model import TextSummarization, TextSummarizationDataModule, predict
+from components.tasks.text_summarization import TextSummarization, TextSummarizationDataModule
 
 # TODO
 Tokenizer = Any
