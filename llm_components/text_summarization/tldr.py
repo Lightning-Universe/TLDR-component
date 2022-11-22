@@ -58,7 +58,4 @@ class TLDR(L.LightningWork, ABC):
         print("Uploading checkpoints and logs...")
         for root, dirs, files in os.walk(".", topdown=False):
             for name in files:
-                abs_fpath = os.path.join(root, name)
-                print(abs_fpath)
-                self.drive.put(abs_fpath)
-        
+                self.drive.put(os.path.join(root, name))

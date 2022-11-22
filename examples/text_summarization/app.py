@@ -39,6 +39,8 @@ class MyTLDR(TLDR):
             print("Summarized text:\n", predictions[0])
 
 
+
+
 app = L.LightningApp(
     LightningTrainerMultiNode(
         MyTLDR,
