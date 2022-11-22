@@ -52,9 +52,6 @@ class TLDR(L.LightningWork, ABC):
 
         trainer.fit(pl_module, datamodule)
 
-            for item in tqdm(items):
-                abs_fpath = os.path.join(root, name)
-      
         print("Uploading checkpoints and logs...")
         for root, dirs, files in os.walk(".", topdown=False):
             for name in files:
