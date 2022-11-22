@@ -46,6 +46,6 @@ class TLDR(L.LightningWork, ABC):
         self._trainer = trainer
 
         trainer.fit(pl_module, datamodule)
-
-        print("DEBUG: putting files in drive")
-        self.checkpoints.put("./checkpoints")
+        #
+        # print("DEBUG: putting files in drive")
+        # self.checkpoints.put("./checkpoints")

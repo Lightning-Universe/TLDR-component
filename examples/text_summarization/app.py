@@ -1,6 +1,7 @@
 # !pip install pandas numpy sentencepiece transformers==4.16.2 scikit-learn
 # !pip install 'torch>=1.7.0,!=1.8.0'
 # !pip install 'lightning>=1.8.2,<1.8.3'
+# !pip install 'git+https://github.com/Lightning-AI/LAI-LLM-components@training'
 
 from typing import Any, Tuple
 import torch.nn as nn
@@ -41,6 +42,6 @@ app = L.LightningApp(
     LightningTrainerMultiNode(
         MyTLDR,
         num_nodes=2,
-        cloud_compute=L.CloudCompute("gpu"),
+        cloud_compute=L.CloudCompute("gpu", disk_size=50),
     )
 )

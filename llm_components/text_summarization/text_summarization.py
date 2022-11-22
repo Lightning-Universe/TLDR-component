@@ -137,8 +137,11 @@ class TextSummarizationDataModule(LightningDataModule):
     def prepare_data(self):
 
         if not os.path.exists('data_summary.csv'):
-            print("Downloading Data, this might take some time, please be patient!")
-            urllib.request.urlretrieve(self.data_source, "data_summary.csv")
+            if self.data_source.startswith('http'):
+                print("Downloading Data, this might take some time, please be patient!")
+                urllib.request.urlretrieve(self.data_source, "data_summary.csv")
+            else:
+                os.symlink(self.data_source, 'data_summary.csv')
         pd.read_csv('data_summary.csv')
 
     def setup(self, stage=None):
