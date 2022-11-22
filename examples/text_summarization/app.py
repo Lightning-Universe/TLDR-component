@@ -1,11 +1,12 @@
 # !pip install pandas
 # !pip install scikit-learn
-
+from typing import Tuple
+import torch.nn as nn
 import lightning as L
 from lightning.app.components import LightningTrainerMultiNode
 from transformers import T5ForConditionalGeneration
 from transformers import T5TokenizerFast as T5Tokenizer
-from model import TextSummarization, TextSummarizationDataModule, predict
+from components.tldr import TLDR, Tokenizer
 
 sample_text = """
 ML Ops platforms come in many flavors from platforms that train models to platforms that label data and auto-retrain models. To build an ML Ops platform requires dozens of engineers, multiple years and 10+ million in funding. The majority of that work will go into infrastructure, multi-cloud, user management, consumption models, billing, and much more.
@@ -13,24 +14,20 @@ Build your platform with Lightning and launch in weeks not months. Focus on the 
 """
 
 
-class TLDR(L.LightningWork):
-    def run(self):
+class MyTLDR(TLDR):
+
+    def get_model(self) -> Tuple[nn.Module, Tokenizer]:
         t5 = T5ForConditionalGeneration.from_pretrained("t5-base", return_dict=True)
         t5_tokenizer = T5Tokenizer.from_pretrained("t5-base")
+        return t5, t5_tokenizer
 
-        datamodule = TextSummarizationDataModule(t5_tokenizer)
-        model = TextSummarization(model=t5, tokenizer=t5_tokenizer)
-        trainer = L.Trainer(max_steps=5)
-        trainer.fit(model, datamodule)
-
-        if trainer.global_rank == 0:
-            predictions = predict(model.to("cuda"), sample_text)
-            print("Summarized text:\n", predictions[0])
+    def get_data_source(self) -> str:
+        return "https://raw.githubusercontent.com/Shivanandroy/T5-Finetuning-PyTorch/main/data/news_summary.csv"
 
 
 app = L.LightningApp(
     LightningTrainerMultiNode(
-        TLDR,
+        MyTLDR,
         num_nodes=2,
         cloud_compute=L.CloudCompute("gpu"),
     )
