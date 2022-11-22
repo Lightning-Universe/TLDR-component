@@ -29,17 +29,11 @@ import pandas as pd
 import torch
 import os
 import urllib.request
-from lightning.pytorch.callbacks.early_stopping import EarlyStopping
-from lightning.pytorch.callbacks.progress import TQDMProgressBar
-from lightning.pytorch.loggers import TensorBoardLogger
 from lightning.pytorch import LightningDataModule, LightningModule
 from sklearn.model_selection import train_test_split
 from torch.optim import AdamW
 from torch.utils.data import DataLoader, Dataset
-from transformers import AutoModelWithLMHead, AutoTokenizer, ByT5Tokenizer, MT5ForConditionalGeneration
-from transformers import MT5TokenizerFast as MT5Tokenizer
 from transformers import PreTrainedTokenizer, T5ForConditionalGeneration
-from transformers import T5TokenizerFast as T5Tokenizer
 
 
 class SummarizationDataset(Dataset):

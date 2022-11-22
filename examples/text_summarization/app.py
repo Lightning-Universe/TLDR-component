@@ -1,5 +1,5 @@
-#! pip install pandas
-#! pip install scikit-learn
+# !pip install pandas
+# !pip install scikit-learn
 
 import lightning as L
 from lightning.app.components import LightningTrainerMultiNode
@@ -25,13 +25,13 @@ class TLDR(L.LightningWork):
 
         if trainer.global_rank == 0:
             predictions = predict(model.to("cuda"), sample_text)
-            print("predictions:", predictions[0])
+            print("Summarized text:\n", predictions[0])
 
 
 app = L.LightningApp(
     LightningTrainerMultiNode(
         TLDR,
         num_nodes=2,
-        cloud_compute=L.CloudCompute("gpu"),  # gpu-fast-multi
+        cloud_compute=L.CloudCompute("gpu"),
     )
 )
