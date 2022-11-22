@@ -1,14 +1,14 @@
 # !pip install pandas
 # !pip install scikit-learn
-from typing import Tuple
+from typing import Any, Tuple
 import torch.nn as nn
 import lightning as L
 from lightning.app.components import LightningTrainerMultiNode
 from transformers import T5ForConditionalGeneration
 from transformers import T5TokenizerFast as T5Tokenizer
 
-from components.tasks.text_summarization import predict
-from components.tldr import TLDR, Tokenizer
+from llm_components.text_summarization.text_summarization import predict
+from llm_components.text_summarization import TLDR
 
 sample_text = """
 ML Ops platforms come in many flavors from platforms that train models to platforms that label data and auto-retrain models. To build an ML Ops platform requires dozens of engineers, multiple years and 10+ million in funding. The majority of that work will go into infrastructure, multi-cloud, user management, consumption models, billing, and much more.
@@ -18,7 +18,7 @@ Build your platform with Lightning and launch in weeks not months. Focus on the 
 
 class MyTLDR(TLDR):
 
-    def get_model(self) -> Tuple[nn.Module, Tokenizer]:
+    def get_model(self) -> Tuple[nn.Module, Any]:
         t5 = T5ForConditionalGeneration.from_pretrained("t5-base", return_dict=True)
         t5_tokenizer = T5Tokenizer.from_pretrained("t5-base")
         return t5, t5_tokenizer

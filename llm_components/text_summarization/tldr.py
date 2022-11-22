@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Tuple, Any
 import torch.nn as nn
 import lightning as L
-from components.tasks.text_summarization import TextSummarization, TextSummarizationDataModule
+from llm_components.text_summarization.text_summarization import TextSummarization, TextSummarizationDataModule
 
 
 class TLDR(L.LightningWork, ABC):
