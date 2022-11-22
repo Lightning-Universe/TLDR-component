@@ -5,7 +5,7 @@ from typing import Tuple, Any
 import torch.nn as nn
 import lightning as L
 from llm_components.text_summarization.text_summarization import TextSummarization, TextSummarizationDataModule
-
+from tqdm import tqdm
 
 class TLDR(L.LightningWork, ABC):
     """Finetune on a text summarization task."""
@@ -53,8 +53,8 @@ class TLDR(L.LightningWork, ABC):
         trainer.fit(pl_module, datamodule)
 
         items = list(glob.glob("lightning_logs/**", recursive=True))
-        for item in items:
+        print("Uploading checkpoints and logs...")
+        for item in tqdm(items):
             if not os.path.isfile(item):
                 continue
-            print("file: ", item)
             self.drive.put(item)
