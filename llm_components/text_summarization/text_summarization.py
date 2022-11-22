@@ -112,7 +112,7 @@ class TextSummarizationDataModule(LightningDataModule):
         batch_size: int = 8,
         source_max_token_len: int = 512,
         target_max_token_len: int = 128,
-        num_workers: int = 2,
+        num_workers: int = min(os.cpu_count() - 1, 1),
     ):
         """
         initiates a PyTorch Lightning Data Module
@@ -137,8 +137,11 @@ class TextSummarizationDataModule(LightningDataModule):
     def prepare_data(self):
 
         if not os.path.exists('data_summary.csv'):
-            print("Downloading Data, this might take some time, please be patient!")
-            urllib.request.urlretrieve(self.data_source, "data_summary.csv")
+            if self.data_source.startswith('http'):
+                print("Downloading Data, this might take some time, please be patient!")
+                urllib.request.urlretrieve(self.data_source, "data_summary.csv")
+            else:
+                os.symlink(self.data_source, 'data_summary.csv')
         pd.read_csv('data_summary.csv')
 
     def setup(self, stage=None):
@@ -201,12 +204,10 @@ class TextSummarization(LightningModule):
         self,
         model,
         tokenizer,
-        outputdir: str = "outputs",
     ):
         super().__init__()
         self.model = model
         self.tokenizer = tokenizer
-        self.outputdir = outputdir
         self.average_training_loss = None
         self.average_validation_loss = None
         self.save_only_last_epoch = False
@@ -280,21 +281,6 @@ class TextSummarization(LightningModule):
     def configure_optimizers(self):
         """configure optimizers"""
         return AdamW(self.parameters(), lr=0.0001)
-
-    def training_epoch_end(self, training_step_outputs):
-        """save tokenizer and model on epoch end"""
-        self.average_training_loss = np.round(
-            torch.mean(torch.stack([x["loss"] for x in training_step_outputs])).item(),
-            4,
-        )
-        path = f"{self.outputdir}/simplet5-epoch-{self.current_epoch}-train-loss-{str(self.average_training_loss)}-val-loss-{str(self.average_validation_loss)}"
-        if self.save_only_last_epoch:
-            if self.current_epoch == self.trainer.max_epochs - 1:
-                self.tokenizer.save_pretrained(path)
-                self.model.save_pretrained(path)
-        else:
-            self.tokenizer.save_pretrained(path)
-            self.model.save_pretrained(path)
 
     def validation_epoch_end(self, validation_step_outputs):
         _loss = [x.cpu() for x in validation_step_outputs]

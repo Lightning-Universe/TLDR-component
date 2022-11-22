@@ -1,7 +1,8 @@
 # !pip install pandas numpy sentencepiece transformers==4.16.2 scikit-learn
 # !pip install 'torch>=1.7.0,!=1.8.0'
 # !pip install 'lightning>=1.8.2,<1.8.3'
-
+# !pip install 'git+https://github.com/Lightning-AI/LAI-LLM-components'
+import os
 from typing import Any, Tuple
 import torch.nn as nn
 import lightning as L
@@ -34,13 +35,16 @@ class MyTLDR(TLDR):
         # Make a prediction at the end of fine-tuning
         if self._trainer.global_rank == 0:
             predictions = predict(self._pl_module.to("cuda"), sample_text)
+            print("Input text:\n", sample_text)
             print("Summarized text:\n", predictions[0])
+
+
 
 
 app = L.LightningApp(
     LightningTrainerMultiNode(
         MyTLDR,
         num_nodes=2,
-        cloud_compute=L.CloudCompute("gpu"),
+        cloud_compute=L.CloudCompute("gpu", disk_size=50),
     )
 )
