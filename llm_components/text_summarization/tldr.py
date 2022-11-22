@@ -1,11 +1,10 @@
-import glob
 import os
 from abc import ABC, abstractmethod
 from typing import Tuple, Any
 import torch.nn as nn
 import lightning as L
 from llm_components.text_summarization.text_summarization import TextSummarization, TextSummarizationDataModule
-from tqdm import tqdm
+
 
 class TLDR(L.LightningWork, ABC):
     """Finetune on a text summarization task."""
