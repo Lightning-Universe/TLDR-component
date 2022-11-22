@@ -42,7 +42,7 @@ class MyTLDR(TLDR):
 app = L.LightningApp(
     LightningTrainerMultiNode(
         MyTLDR,
-        num_nodes=1,
+        num_nodes=2,
         cloud_compute=L.CloudCompute("gpu", disk_size=50),
     )
 )
