@@ -23,13 +23,20 @@
 
 ______________________________________________________________________
 
-Use TLDR component to pre-train or fine-tune a large language model for text-summarization, 
-with as many parameters as you want (up to billions), using multiple GPUs, across multiple machines, 
-on your own data, and all without any infrastructure hassle! All handled easily with the [Lightning Apps framework](https://lightning.ai/lightning-docs/).
+Use TLDR to pre-train or fine-tune a large language model for text summarization, 
+with as many parameters as you want (up to billions!). 
+
+You can do this:
+* using multiple GPUs
+* across multiple machines
+* on your own data
+* all without any infrastructure hassle! 
+
+All handled easily with the [Lightning Apps framework](https://lightning.ai/lightning-docs/).
 
 ## Run
 
-To run this app, paste the following code snippet in a file `app.py`:
+To run TLDR, paste the following code snippet in a file `app.py`:
 
 
 ```python
