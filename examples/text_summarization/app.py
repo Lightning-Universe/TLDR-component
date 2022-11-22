@@ -1,7 +1,7 @@
 # !pip install 'git+https://github.com/Lightning-AI/LAI-TLDR'
 import lightning as L
 from transformers import T5ForConditionalGeneration, T5TokenizerFast as T5Tokenizer
-from llm_components.text_summarization import predict, TLDR
+from lai_tldr.text_summarization import predict, TLDR
 
 sample_text = """
 ML Ops platforms come in many flavors from platforms that train models to platforms that label data and auto-retrain models. To build an ML Ops platform requires dozens of engineers, multiple years and 10+ million in funding. The majority of that work will go into infrastructure, multi-cloud, user management, consumption models, billing, and much more.

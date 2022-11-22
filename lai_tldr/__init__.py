@@ -1,4 +1,4 @@
-from llm_components.text_summarization import TLDR
+from lai_tldr.text_summarization import TLDR
 
 __all__ = [
     'TLDR'
