@@ -107,6 +107,7 @@ class TextSummarizationDataModule(LightningDataModule):
 
     def __init__(
         self,
+        data_source: str,
         tokenizer: PreTrainedTokenizer,
         batch_size: int = 8,
         source_max_token_len: int = 512,
@@ -124,6 +125,7 @@ class TextSummarizationDataModule(LightningDataModule):
             target_max_token_len (int, optional): max token length of target text. Defaults to 512.
         """
         super().__init__()
+        self.data_source = data_source
         self.train_df = None
         self.test_df = None
         self.batch_size = batch_size
@@ -136,7 +138,7 @@ class TextSummarizationDataModule(LightningDataModule):
 
         if not os.path.exists('data_summary.csv'):
             print("Downloading Data, this might take some time, please be patient!")
-            urllib.request.urlretrieve("https://raw.githubusercontent.com/Shivanandroy/T5-Finetuning-PyTorch/main/data/news_summary.csv", "data_summary.csv")
+            urllib.request.urlretrieve(self.data_source, "data_summary.csv")
         pd.read_csv('data_summary.csv')
 
     def setup(self, stage=None):
