@@ -4,23 +4,19 @@ import torch.nn as nn
 import lightning as L
 from components.tasks.text_summarization import TextSummarization, TextSummarizationDataModule
 
-# TODO
-Tokenizer = Any
 
 class TLDR(L.LightningWork, ABC):
 
     @abstractmethod
-    def get_model(self) -> Tuple[nn.Module, Tokenizer]:
-        """TODO docs"""
-        pass
+    def get_model(self) -> Tuple[nn.Module, Any]:
+        """Return your large transformer language model here."""
 
     @abstractmethod
     def get_data_source(self) -> str:
-        """TODO docs"""
-        pass
+        """Return a path to a file or a public URL that can be downloaded."""
 
     def get_trainer_settings(self):
-        """TODO docs"""
+        """Optionally return a dictionary with Lightning Trainer settings."""
         return dict(max_steps=5)  # TODO, model checkpointing etc.
 
     def run(self):
