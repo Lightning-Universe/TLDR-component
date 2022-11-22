@@ -34,7 +34,7 @@ class TLDR(L.LightningWork, ABC):
             monitor="val_loss",
             mode="min",
         )
-        return dict(max_epochs=5, callbacks=[early_stopping, checkpoints], strategy="ddp_find_unused_parameters=False")
+        return dict(max_epochs=5, limit_train_batches=10, limit_val_batches=10, callbacks=[early_stopping, checkpoints], strategy="ddp_find_unused_parameters_false")
 
     def run(self):
         module, tokenizer = self.get_model()
