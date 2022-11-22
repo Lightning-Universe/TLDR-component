@@ -11,7 +11,7 @@
 <p align="center">
   <a href="#run">Run</a> •
   <a href="https://www.lightning.ai/">Lightning AI</a> •
-  <a href="https://lightning.ai/lightning-docs/">Docs</a> •
+  <a href="https://lightning.ai/lightning-docs/">Docs</a>
 </p>
 
 [![ReadTheDocs](https://readthedocs.org/projects/pytorch-lightning/badge/?version=stable)](https://lightning.ai/lightning-docs/)
