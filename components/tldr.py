@@ -24,6 +24,10 @@ class TLDR(L.LightningWork, ABC):
         pl_module = TextSummarization(model=module, tokenizer=tokenizer)
         datamodule = TextSummarizationDataModule(data_source=self.get_data_source(), tokenizer=tokenizer)
         trainer = L.Trainer(**self.get_trainer_settings())
+
+        self._pl_module = pl_module
+        self._trainer = trainer
+
         trainer.fit(pl_module, datamodule)
 
         # TODO: export weights
