@@ -112,7 +112,7 @@ class TextSummarizationDataModule(LightningDataModule):
         batch_size: int = 8,
         source_max_token_len: int = 512,
         target_max_token_len: int = 128,
-        num_workers: int = 2,
+        num_workers: int = min(os.cpu_count() - 1, 1),
     ):
         """
         initiates a PyTorch Lightning Data Module
