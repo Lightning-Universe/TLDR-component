@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Tuple, Any
 import torch.nn as nn
 import lightning as L
-from lai_tldr.text_summarization.text_summarization import TextSummarization, TextSummarizationDataModule
+from lai_tldr.text_summarization import TextSummarization, TextSummarizationDataModule
 
 
 class TLDR(L.LightningWork, ABC):
