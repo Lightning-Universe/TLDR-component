@@ -23,6 +23,7 @@ class TLDR(L.LightningWork, ABC):
 
     def get_trainer_settings(self):
         """Override this to change the Lightning Trainer default settings for finetuning."""
+        """Override this to change the Lightning Trainer default settings for finetuning."""
         early_stopping = L.pytorch.callbacks.EarlyStopping(
             monitor="val_loss",
             min_delta=0.00,
@@ -35,7 +36,17 @@ class TLDR(L.LightningWork, ABC):
             monitor="val_loss",
             mode="min",
         )
-        return dict(max_epochs=100, callbacks=[early_stopping, checkpoints], strategy="ddp_find_unused_parameters_false")
+        return dict(
+            max_epochs=100,
+            callbacks=[early_stopping, checkpoints],
+            strategy=L.pytorch.strategies.DeepSpeedStrategy(
+                stage=3,
+                offload_optimizer=True,
+                offload_parameters=True,
+                pin_memory=True,
+            ),
+            precision="bf16",
+        )
 
     def run(self):
         # for huggingface/transformers
@@ -43,7 +54,9 @@ class TLDR(L.LightningWork, ABC):
 
         module, tokenizer = self.get_model()
         pl_module = TextSummarization(model=module, tokenizer=tokenizer)
-        datamodule = TextSummarizationDataModule(data_source=self.get_data_source(), tokenizer=tokenizer)
+        datamodule = TextSummarizationDataModule(
+            data_source=self.get_data_source(), tokenizer=tokenizer
+        )
         trainer = L.Trainer(**self.get_trainer_settings())
 
         self._pl_module = pl_module

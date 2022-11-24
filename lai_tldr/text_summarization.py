@@ -22,7 +22,7 @@
 """
 Code in this file is based on https://github.com/Shivanandroy/simpleT5 by Shivanand Roy
 """
-
+from typing import Dict, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -45,25 +45,25 @@ class SummarizationDataset(Dataset):
         tokenizer: PreTrainedTokenizer,
         source_max_token_len: int = 512,
         target_max_token_len: int = 512,
-    ):
+    ) -> None:
         """
         initiates a PyTorch Dataset Module for input data
         Args:
-            data (pd.DataFrame): input pandas dataframe. Dataframe must have 2 column --> "source_text" and "target_text"
-            tokenizer (PreTrainedTokenizer): a PreTrainedTokenizer (T5Tokenizer, MT5Tokenizer, or ByT5Tokenizer)
-            source_max_token_len (int, optional): max token length of source text. Defaults to 512.
-            target_max_token_len (int, optional): max token length of target text. Defaults to 512.
+            data: input pandas dataframe. Dataframe must have 2 column --> "source_text" and "target_text"
+            tokenizer: a PreTrainedTokenizer (T5Tokenizer, MT5Tokenizer, or ByT5Tokenizer)
+            source_max_token_len: max token length of source text. Defaults to 512.
+            target_max_token_len: max token length of target text. Defaults to 512.
         """
         self.tokenizer = tokenizer
         self.data = data
         self.source_max_token_len = source_max_token_len
         self.target_max_token_len = target_max_token_len
 
-    def __len__(self):
+    def __len__(self) -> int:
         """returns length of data"""
         return len(self.data)
 
-    def __getitem__(self, index: int):
+    def __getitem__(self, index: int) -> Dict[str, torch.Tensor]:
         """returns dictionary of input tensors to feed into T5/MT5 model"""
 
         data_row = self.data.iloc[index]
@@ -113,16 +113,16 @@ class TextSummarizationDataModule(LightningDataModule):
         source_max_token_len: int = 512,
         target_max_token_len: int = 128,
         num_workers: int = min(os.cpu_count() - 1, 1),
-    ):
+    ) -> None:
         """
         initiates a PyTorch Lightning Data Module
         Args:
-            train_df (pd.DataFrame): training dataframe. Dataframe must contain 2 columns --> "source_text" & "target_text"
-            test_df (pd.DataFrame): validation dataframe. Dataframe must contain 2 columns --> "source_text" & "target_text"
-            tokenizer (PreTrainedTokenizer): PreTrainedTokenizer (T5Tokenizer, MT5Tokenizer, or ByT5Tokenizer)
-            batch_size (int, optional): batch size. Defaults to 4.
-            source_max_token_len (int, optional): max token length of source text. Defaults to 512.
-            target_max_token_len (int, optional): max token length of target text. Defaults to 512.
+            data_source: path or url to a csv file. The resulting Dataframe must have two columns --> "source_text" and "target_text"
+            tokenizer: PreTrainedTokenizer (T5Tokenizer, MT5Tokenizer, or ByT5Tokenizer)
+            batch_size: batch size. Defaults to 4.
+            source_max_token_len: max token length of source text. Defaults to 512.
+            target_max_token_len: max token length of target text. Defaults to 512.
+            num_workers: number of workers for data loading. Defaults to min(os.cpu_count() - 1, 1).
         """
         super().__init__()
         self.data_source = data_source
@@ -134,17 +134,21 @@ class TextSummarizationDataModule(LightningDataModule):
         self.target_max_token_len = target_max_token_len
         self.num_workers = num_workers
 
-    def prepare_data(self):
+    def prepare_data(self) -> None:
+        """downloads data from data_source if necessary and checks it can be read to a dataframe"""
 
-        if not os.path.exists('data_summary.csv'):
-            if self.data_source.startswith('http'):
+        if not os.path.exists("data_summary.csv"):
+            if self.data_source.startswith("http"):
                 print("Downloading Data, this might take some time, please be patient!")
                 urllib.request.urlretrieve(self.data_source, "data_summary.csv")
             else:
-                os.symlink(self.data_source, 'data_summary.csv')
-        pd.read_csv('data_summary.csv')
+                os.symlink(self.data_source, "data_summary.csv")
+        pd.read_csv("data_summary.csv")
 
-    def setup(self, stage=None):
+    def setup(self, stage=None) -> None:
+        """
+        splits data into train and test set
+        """
         path = "data_summary.csv"
         df = pd.read_csv(path)
         df.head()
@@ -169,7 +173,7 @@ class TextSummarizationDataModule(LightningDataModule):
             self.target_max_token_len,
         )
 
-    def train_dataloader(self):
+    def train_dataloader(self) -> DataLoader:
         """training dataloader"""
         return DataLoader(
             self.train_dataset,
@@ -178,7 +182,7 @@ class TextSummarizationDataModule(LightningDataModule):
             num_workers=self.num_workers,
         )
 
-    def test_dataloader(self):
+    def test_dataloader(self) -> DataLoader:
         """test dataloader"""
         return DataLoader(
             self.test_dataset,
@@ -187,7 +191,7 @@ class TextSummarizationDataModule(LightningDataModule):
             num_workers=self.num_workers,
         )
 
-    def val_dataloader(self):
+    def val_dataloader(self) -> DataLoader:
         """validation dataloader"""
         return DataLoader(
             self.test_dataset,
@@ -202,18 +206,25 @@ class TextSummarization(LightningModule):
 
     def __init__(
         self,
-        model,
-        tokenizer,
-    ):
+        model: torch.nn.Module,
+    ) -> None:
+        """
+        model: a model that returns an output with attributes "logits" and "loss"
+        """
         super().__init__()
         self.model = model
-        self.tokenizer = tokenizer
         self.average_training_loss = None
         self.average_validation_loss = None
         self.save_only_last_epoch = False
 
-    def forward(self, input_ids, attention_mask, decoder_attention_mask, labels=None):
-        """forward step"""
+    def forward(
+        self,
+        input_ids: torch.Tensor,
+        attention_mask: torch.Tensor,
+        decoder_attention_mask: torch.Tensor,
+        labels: Optional[torch.Tensor] = None,
+    ) -> Tuple[Union[None, torch.Tensor], torch.Tensor]:
+        """forward step, returns loss and logits. Loss can be None if labels are not provided"""
         output = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -223,7 +234,9 @@ class TextSummarization(LightningModule):
 
         return output.loss, output.logits
 
-    def training_step(self, batch, batch_size):
+    def training_step(
+        self, batch: Dict[str, torch.Tensor], batch_idx: int
+    ) -> torch.Tensor:
         """training step"""
         input_ids = batch["source_text_input_ids"]
         attention_mask = batch["source_text_attention_mask"]
@@ -242,7 +255,7 @@ class TextSummarization(LightningModule):
         )
         return loss
 
-    def validation_step(self, batch, batch_size):
+    def validation_step(self, batch: Dict[str, torch.Tensor], batch_idx: int) -> None:
         """validation step"""
         input_ids = batch["source_text_input_ids"]
         attention_mask = batch["source_text_attention_mask"]
@@ -259,9 +272,8 @@ class TextSummarization(LightningModule):
         self.log(
             "val_loss", loss, prog_bar=True, logger=True, on_epoch=True, on_step=True
         )
-        return loss
 
-    def test_step(self, batch, batch_size):
+    def test_step(self, batch: Dict[str, torch.Tensor], batch_idx: int) -> None:
         """test step"""
         input_ids = batch["source_text_input_ids"]
         attention_mask = batch["source_text_attention_mask"]
@@ -276,18 +288,10 @@ class TextSummarization(LightningModule):
         )
 
         self.log("test_loss", loss, prog_bar=True, logger=True)
-        return loss
 
-    def configure_optimizers(self):
+    def configure_optimizers(self) -> torch.optim.Optimizer:
         """configure optimizers"""
         return AdamW(self.parameters(), lr=0.0001)
-
-    def validation_epoch_end(self, validation_step_outputs):
-        _loss = [x.cpu() for x in validation_step_outputs]
-        self.average_validation_loss = np.round(
-            torch.mean(torch.stack(_loss)).item(),
-            4,
-        )
 
 
 def predict(
