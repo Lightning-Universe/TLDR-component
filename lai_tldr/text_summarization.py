@@ -258,7 +258,7 @@ class TextSummarization(LightningModule):
         )
 
         self.log(
-            "train_loss", loss, prog_bar=True, logger=True, on_epoch=True, on_step=True
+            "train_loss", loss, prog_bar=True, on_epoch=True, on_step=True
         )
         return loss
 
@@ -277,7 +277,7 @@ class TextSummarization(LightningModule):
         )
 
         self.log(
-            "val_loss", loss, prog_bar=True, logger=True, on_epoch=True, on_step=True
+            "val_loss", loss, prog_bar=True
         )
 
     def test_step(self, batch, batch_idx):
