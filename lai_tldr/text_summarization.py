@@ -22,7 +22,7 @@
 """
 Code in this file is based on https://github.com/Shivanandroy/simpleT5 by Shivanand Roy
 """
-
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -113,6 +113,7 @@ class TextSummarizationDataModule(LightningDataModule):
         source_max_token_len: int = 512,
         target_max_token_len: int = 128,
         num_workers: int = min(os.cpu_count() - 1, 1),
+        data_root_dir: Optional[str] = None
     ):
         """
         initiates a PyTorch Lightning Data Module
@@ -127,26 +128,36 @@ class TextSummarizationDataModule(LightningDataModule):
         super().__init__()
         self.data_source = data_source
         self.train_df = None
+        self.val_df = None
         self.test_df = None
         self.batch_size = batch_size
         self.tokenizer = tokenizer
         self.source_max_token_len = source_max_token_len
         self.target_max_token_len = target_max_token_len
         self.num_workers = num_workers
+        self.data_path = None
+        self.data_root_dir = data_root_dir
+        self.train_dataset = None
+        self.val_dataset = None
+        self.test_dataset = None
 
     def prepare_data(self):
 
-        if not os.path.exists('data_summary.csv'):
-            if self.data_source.startswith('http'):
+        data_path = "data_summary.csv"
+        if self.data_root_dir is not None:
+            data_path = os.path.join(self.data_root_dir, data_path)
+
+        if not os.path.exists(data_path):
+            if self.data_source.startswith("http"):
                 print("Downloading Data, this might take some time, please be patient!")
-                urllib.request.urlretrieve(self.data_source, "data_summary.csv")
+                urllib.request.urlretrieve(self.data_source, data_path)
             else:
-                os.symlink(self.data_source, 'data_summary.csv')
-        pd.read_csv('data_summary.csv')
+                os.symlink(self.data_source, data_path)
+        pd.read_csv(data_path)
+        self.data_path = data_path
 
     def setup(self, stage=None):
-        path = "data_summary.csv"
-        df = pd.read_csv(path)
+        df = pd.read_csv(self.data_path)
         df.head()
 
         # simpleT5 expects dataframe to have 2 columns: "source_text" and "target_text"
@@ -155,13 +166,21 @@ class TextSummarizationDataModule(LightningDataModule):
 
         # T5 model expects a task related prefix: since it is a summarization task, we will add a prefix "summarize: "
         df["source_text"] = "summarize: " + df["source_text"]
-        self.train_df, self.test_df = train_test_split(df, test_size=0.2)
+        train_df, self.test_df = train_test_split(df, test_size=0.2)
+        self.train_df, self.val_df = train_test_split(train_df, test_size=0.2)
         self.train_dataset = SummarizationDataset(
             self.train_df,
             self.tokenizer,
             self.source_max_token_len,
             self.target_max_token_len,
         )
+        self.val_dataset = SummarizationDataset(
+            self.val_df,
+            self.tokenizer,
+            self.source_max_token_len,
+            self.target_max_token_len,
+        )
+
         self.test_dataset = SummarizationDataset(
             self.test_df,
             self.tokenizer,
@@ -190,7 +209,7 @@ class TextSummarizationDataModule(LightningDataModule):
     def val_dataloader(self):
         """validation dataloader"""
         return DataLoader(
-            self.test_dataset,
+            self.val_dataset,
             batch_size=self.batch_size,
             shuffle=False,
             num_workers=self.num_workers,
