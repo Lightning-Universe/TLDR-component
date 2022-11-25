@@ -1,4 +1,4 @@
-# !pip install 'git+https://github.com/Lightning-AI/LAI-TLDR'
+# !pip install 'git+https://github.com/Lightning-AI/LAI-TLDR-Component'
 import lightning as L
 from transformers import T5ForConditionalGeneration, T5TokenizerFast as T5Tokenizer
 from lai_tldr import predict, TLDR
@@ -17,6 +17,12 @@ class MyTLDR(TLDR):
         t5_tokenizer = T5Tokenizer.from_pretrained(model_type)
         return t5, t5_tokenizer
 
+    def get_trainer_settings(self):
+        settings = super().get_trainer_settings()
+        settings["strategy"] = "deepspeed_stage_3_offload"
+        settings["precision"] = 16
+        return settings
+
     def get_data_source(self) -> str:
         return "https://raw.githubusercontent.com/Shivanandroy/T5-Finetuning-PyTorch/main/data/news_summary.csv"
 
@@ -33,7 +39,7 @@ class MyTLDR(TLDR):
 app = L.LightningApp(
     L.app.components.LightningTrainerMultiNode(
         MyTLDR,
-        num_nodes=10,
-        cloud_compute=L.CloudCompute("gpu-fast-multi", disk_size=50),
+        num_nodes=7,
+        cloud_compute=L.CloudCompute("gpu-fast-multi", disk_size=500),
     )
 )

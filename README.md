@@ -40,7 +40,7 @@ To run TLDR, paste the following code snippet in a file `app.py`:
 
 
 ```python
-# !pip install 'git+https://github.com/Lightning-AI/LAI-TLDR'
+# !pip install 'git+https://github.com/Lightning-AI/LAI-TLDR-Component'
 import lightning as L
 from transformers import T5ForConditionalGeneration, T5TokenizerFast as T5Tokenizer
 from lai_tldr import predict, TLDR
