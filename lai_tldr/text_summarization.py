@@ -243,7 +243,7 @@ class TextSummarization(LightningModule):
 
         return output.loss, output.logits
 
-    def training_step(self, batch, batch_size):
+    def training_step(self, batch, batch_idx):
         """training step"""
         input_ids = batch["source_text_input_ids"]
         attention_mask = batch["source_text_attention_mask"]
@@ -262,7 +262,7 @@ class TextSummarization(LightningModule):
         )
         return loss
 
-    def validation_step(self, batch, batch_size):
+    def validation_step(self, batch, batch_idx):
         """validation step"""
         input_ids = batch["source_text_input_ids"]
         attention_mask = batch["source_text_attention_mask"]
@@ -279,9 +279,8 @@ class TextSummarization(LightningModule):
         self.log(
             "val_loss", loss, prog_bar=True, logger=True, on_epoch=True, on_step=True
         )
-        return loss
 
-    def test_step(self, batch, batch_size):
+    def test_step(self, batch, batch_idx):
         """test step"""
         input_ids = batch["source_text_input_ids"]
         attention_mask = batch["source_text_attention_mask"]
@@ -295,19 +294,11 @@ class TextSummarization(LightningModule):
             labels=labels,
         )
 
-        self.log("test_loss", loss, prog_bar=True, logger=True)
-        return loss
+        self.log("test_loss", loss, prog_bar=True)
 
     def configure_optimizers(self):
         """configure optimizers"""
         return AdamW(self.parameters(), lr=0.0001)
-
-    def validation_epoch_end(self, validation_step_outputs):
-        _loss = [x.cpu() for x in validation_step_outputs]
-        self.average_validation_loss = np.round(
-            torch.mean(torch.stack(_loss)).item(),
-            4,
-        )
 
 
 def predict(
