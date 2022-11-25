@@ -167,7 +167,8 @@ class TextSummarizationDataModule(LightningDataModule):
         # T5 model expects a task related prefix: since it is a summarization task, we will add a prefix "summarize: "
         df["source_text"] = "summarize: " + df["source_text"]
         train_df, self.test_df = train_test_split(df, test_size=0.2)
-        self.train_df, self.val_df = train_test_split(train_df, test_size=0.2)
+        # 0.25 of remaining is 0.2 of original size
+        self.train_df, self.val_df = train_test_split(train_df, test_size=0.25)
         self.train_dataset = SummarizationDataset(
             self.train_df,
             self.tokenizer,
