@@ -11,7 +11,7 @@ Build your platform with Lightning and launch in weeks not months. Focus on the 
 
 class MyTLDR(TLDR):
     def get_model(self):
-        model_type = "t5-11b"
+        model_type = "t5-base"
         t5 = T5ForConditionalGeneration.from_pretrained(model_type, return_dict=True)
         t5_tokenizer = T5Tokenizer.from_pretrained(model_type)
         return t5, t5_tokenizer
@@ -38,7 +38,7 @@ class MyTLDR(TLDR):
 app = L.LightningApp(
     L.app.components.LightningTrainerMultiNode(
         MyTLDR,
-        num_nodes=7,
-        cloud_compute=L.CloudCompute("gpu-fast-multi", disk_size=500),
+        num_nodes=2,
+        cloud_compute=L.CloudCompute("gpu-fast-multi", disk_size=50),
     )
 )
