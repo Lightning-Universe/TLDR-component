@@ -4,13 +4,12 @@ from transformers import T5ForConditionalGeneration, T5TokenizerFast as T5Tokeni
 from lai_tldr import predict, TLDR
 
 sample_text = """
-ML Ops platforms come in many flavors from platforms that train models to platforms that label data and auto-retrain models. To build an ML Ops platform requires dozens of engineers, multiple years and 10+ million in funding. The majority of that work will go into infrastructure, multi-cloud, user management, consumption models, billing, and much more.
+summarize: ML Ops platforms come in many flavors from platforms that train models to platforms that label data and auto-retrain models. To build an ML Ops platform requires dozens of engineers, multiple years and 10+ million in funding. The majority of that work will go into infrastructure, multi-cloud, user management, consumption models, billing, and much more.
 Build your platform with Lightning and launch in weeks not months. Focus on the workflow you want to enable (label data then train models), Lightning will handle all the infrastructure, billing, user management, and the other operational headaches.
 """
 
 
 class MyTLDR(TLDR):
-
     def get_model(self):
         model_type = "t5-11b"
         t5 = T5ForConditionalGeneration.from_pretrained(model_type, return_dict=True)

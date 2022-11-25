@@ -35,7 +35,11 @@ class TLDR(L.LightningWork, ABC):
             monitor="val_loss",
             mode="min",
         )
-        return dict(max_epochs=100, callbacks=[early_stopping, checkpoints], strategy="ddp_find_unused_parameters_false")
+        return dict(
+            max_epochs=100,
+            callbacks=[early_stopping, checkpoints],
+            strategy="ddp_find_unused_parameters_false",
+        )
 
     def run(self):
         # for huggingface/transformers
@@ -43,7 +47,9 @@ class TLDR(L.LightningWork, ABC):
 
         module, tokenizer = self.get_model()
         pl_module = TextSummarization(model=module, tokenizer=tokenizer)
-        datamodule = TextSummarizationDataModule(data_source=self.get_data_source(), tokenizer=tokenizer)
+        datamodule = TextSummarizationDataModule(
+            data_source=self.get_data_source(), tokenizer=tokenizer
+        )
         trainer = L.Trainer(**self.get_trainer_settings())
 
         self._pl_module = pl_module

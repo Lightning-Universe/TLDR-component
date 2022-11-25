@@ -46,7 +46,7 @@ from transformers import T5ForConditionalGeneration, T5TokenizerFast as T5Tokeni
 from lai_tldr import predict, TLDR
 
 sample_text = """
-Insert a long text here
+summarize: Insert a long text here
 """
 
 class MyTLDR(TLDR):
