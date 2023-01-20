@@ -46,15 +46,25 @@ from transformers import T5ForConditionalGeneration, T5TokenizerFast as T5Tokeni
 from lai_tldr import predict, TLDR
 
 sample_text = """
-summarize: Insert a long text here
+summarize: ML Ops platforms come in many flavors from platforms that train models to platforms that label data and auto-retrain models. To build an ML Ops platform requires dozens of engineers, multiple years and 10+ million in funding. The majority of that work will go into infrastructure, multi-cloud, user management, consumption models, billing, and much more.
+Build your platform with Lightning and launch in weeks not months. Focus on the workflow you want to enable (label data then train models), Lightning will handle all the infrastructure, billing, user management, and the other operational headaches.
 """
 
-class MyTLDR(TLDR):
 
+class MyTLDR(TLDR):
     def get_model(self):
-        t5 = T5ForConditionalGeneration.from_pretrained("t5-base", return_dict=True)
-        t5_tokenizer = T5Tokenizer.from_pretrained("t5-base")
+        model_type = "t5-base"
+        t5 = T5ForConditionalGeneration.from_pretrained(model_type, return_dict=True)
+        t5_tokenizer = T5Tokenizer.from_pretrained(model_type)
         return t5, t5_tokenizer
+
+    def get_trainer_settings(self):
+        settings = super().get_trainer_settings()
+        if from L.app.utilities.cloud import is_running_in_cloud:
+            settings["strategy"] = "deepspeed_stage_3_offload"
+
+        settings["precision"] = 16
+        return settings
 
     def get_data_source(self) -> str:
         return "https://raw.githubusercontent.com/Shivanandroy/T5-Finetuning-PyTorch/main/data/news_summary.csv"
@@ -64,7 +74,7 @@ class MyTLDR(TLDR):
 
         # Make a prediction at the end of fine-tuning
         if self._trainer.global_rank == 0:
-            predictions = predict(self._pl_module.to("cuda"), sample_text)
+            predictions = predict(self._pl_module.to(self._trainer.strategy.root_device), sample_text)
             print("Input text:\n", sample_text)
             print("Summarized text:\n", predictions[0])
 
@@ -73,7 +83,7 @@ app = L.LightningApp(
     L.app.components.LightningTrainerMultiNode(
         MyTLDR,
         num_nodes=2,
-        cloud_compute=L.CloudCompute("gpu", disk_size=50),
+        cloud_compute=L.CloudCompute("gpu-fast-multi", disk_size=50),
     )
 )
 
