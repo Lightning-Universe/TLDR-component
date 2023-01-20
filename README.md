@@ -60,7 +60,7 @@ class MyTLDR(TLDR):
 
     def get_trainer_settings(self):
         settings = super().get_trainer_settings()
-        if from L.app.utilities.cloud import is_running_in_cloud:
+        if L.app.utilities.cloud.is_running_in_cloud:
             settings["strategy"] = "deepspeed_stage_3_offload"
 
         settings["precision"] = 16
@@ -86,8 +86,6 @@ app = L.LightningApp(
         cloud_compute=L.CloudCompute("gpu-fast-multi", disk_size=50),
     )
 )
-
-
 ```
 
 ### Running locally
