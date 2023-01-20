@@ -18,7 +18,9 @@ class MyTLDR(TLDR):
 
     def get_trainer_settings(self):
         settings = super().get_trainer_settings()
-        settings["strategy"] = "deepspeed_stage_3_offload"
+        if from L.app.utilities.cloud import is_running_in_cloud:
+            settings["strategy"] = "deepspeed_stage_3_offload"
+
         settings["precision"] = 16
         return settings
 
