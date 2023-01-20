@@ -32,7 +32,7 @@ class MyTLDR(TLDR):
 
         # Make a prediction at the end of fine-tuning
         if self._trainer.global_rank == 0:
-            predictions = predict(self._pl_module.to("cuda"), sample_text)
+            predictions = predict(self._pl_module.to(self._trainer.strategy.root_device), sample_text)
             print("Input text:\n", sample_text)
             print("Summarized text:\n", predictions[0])
 
