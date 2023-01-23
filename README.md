@@ -94,12 +94,12 @@ class TLDR(L.LightningWork):
         if trainer.global_rank == 0:
             sample_text = (
                 "summarize: ML Ops platforms come in many flavors from platforms that train models to platforms "
-                + "that label data and auto-retrain models. To build an ML Ops platform requires dozens of "
-                + "engineers, multiple years and 10+ million in funding. The majority of that work will go into "
-                + "infrastructure, multi-cloud, user management, consumption models, billing, and much more. "
-                + "Build your platform with Lightning and launch in weeks not months. Focus on the workflow you want "
-                + "to enable (label data then train models), Lightning will handle all the infrastructure, billing, "
-                + "user management, and the other operational headaches."
+                "that label data and auto-retrain models. To build an ML Ops platform requires dozens of "
+                "engineers, multiple years and 10+ million in funding. The majority of that work will go into "
+                "infrastructure, multi-cloud, user management, consumption models, billing, and much more. "
+                "Build your platform with Lightning and launch in weeks not months. Focus on the workflow you want "
+                "to enable (label data then train models), Lightning will handle all the infrastructure, billing, "
+                "user management, and the other operational headaches."
             )
             predictions = predict(
                 lightning_module.to(trainer.strategy.root_device), sample_text
