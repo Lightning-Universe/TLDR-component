@@ -47,16 +47,16 @@ class BoringTokenizer:
 
 @pytest.mark.parametrize('max_length', [128, 256])
 def test_module_train(tmpdir, max_length):
+    printable = string.ascii_lowercase + string.ascii_uppercase + string.ascii_letters + " "
     data = {
         "source_text": [
-            "".join(choice(string.printable) for i in range(10)) for _ in range(100)
+            "".join(choice(printable) for i in range(10)) for _ in range(100)
         ],
         "target_text": [
-            "".join(choice(string.printable) for i in range(10)) for _ in range(100)
+            "".join(choice(printable) for i in range(10)) for _ in range(100)
         ],
     }
     pd.DataFrame(data).to_csv(os.path.join(tmpdir, "data.csv"))
-    sleep(3)  # makes sure files have been written to disk
 
     dm = TLDRDataModule(
         os.path.join(tmpdir, "data.csv"),

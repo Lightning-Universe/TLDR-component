@@ -54,7 +54,7 @@ def test_summarization_dataset():
 
 
 def test_textsummarization_datamodule(tmpdir):
-    printable = string.ascii_lowercase + string.ascii_uppercase + string.ascii_letters
+    printable = string.ascii_lowercase + string.ascii_uppercase + string.ascii_letters + " "
     data = {
         "source_text": [
             "".join(random.choice(printable) for i in range(10)) for _ in range(100)
