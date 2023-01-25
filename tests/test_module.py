@@ -2,6 +2,7 @@ import os
 import string
 from collections import namedtuple
 from random import choice
+from time import sleep
 
 import pandas as pd
 import pytest
@@ -55,6 +56,7 @@ def test_module_train(tmpdir, max_length):
         ],
     }
     pd.DataFrame(data).to_csv(os.path.join(tmpdir, "data.csv"))
+    sleep(3)  # makes sure files have been written to disk
 
     dm = TLDRDataModule(
         os.path.join(tmpdir, "data.csv"),
