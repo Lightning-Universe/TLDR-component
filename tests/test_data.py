@@ -5,9 +5,9 @@ import random
 import torch
 import pandas as pd
 
-from lai_tldr.text_summarization import (
+from lai_tldr.data import (
     SummarizationDataset,
-    TextSummarizationDataModule,
+    TLDRDataModule,
 )
 
 
@@ -54,20 +54,21 @@ def test_summarization_dataset():
 
 
 def test_textsummarization_datamodule(tmpdir):
-    printable = string.ascii_lowercase + string.ascii_uppercase + string.ascii_letters
+    printable = string.ascii_lowercase + string.ascii_uppercase + string.ascii_letters + " "
     data = {
         "source_text": [
-            "".join(random.choice(printable) for i in range(10))
-            for _ in range(100)
+            "".join(random.choice(printable) for i in range(10)) for _ in range(100)
         ],
         "target_text": [
-            "".join(random.choice(printable) for i in range(10))
-            for _ in range(100)
+            "".join(random.choice(printable) for i in range(10)) for _ in range(100)
         ],
     }
     pd.DataFrame(data).to_csv(os.path.join(tmpdir, "data.csv"))
 
-    dm = TextSummarizationDataModule(os.path.join(tmpdir, 'data.csv'), tokenizer=BoringTokenizer(), data_root_dir=tmpdir)
+    dm = TLDRDataModule(
+        os.path.join(tmpdir, "data.csv"),
+        tokenizer=BoringTokenizer(),
+    )
 
     assert dm.train_df is None
     assert dm.val_df is None
@@ -75,11 +76,9 @@ def test_textsummarization_datamodule(tmpdir):
     assert dm.train_dataset is None
     assert dm.val_dataset is None
     assert dm.test_dataset is None
-    assert dm.data_path is None
 
     dm.prepare_data()
-    assert os.path.exists(os.path.join(tmpdir, 'data_summary.csv'))
-    assert dm.data_path == os.path.join(tmpdir, 'data_summary.csv')
+    assert os.path.exists(os.path.join(tmpdir, "data.csv"))
 
     dm.setup()
 
