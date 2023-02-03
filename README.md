@@ -23,14 +23,15 @@
 
 ______________________________________________________________________
 
-Use TLDR to pre-train or fine-tune a large language model for text summarization, 
-with as many parameters as you want (up to billions!). 
+Use TLDR to pre-train or fine-tune a large language model for text summarization,
+with as many parameters as you want (up to billions!).
 
 You can do this:
-* using multiple GPUs
-* across multiple machines
-* on your own data
-* all without any infrastructure hassle! 
+
+- using multiple GPUs
+- across multiple machines
+- on your own data
+- all without any infrastructure hassle!
 
 All handled easily with the [Lightning Apps framework](https://lightning.ai/lightning-docs/).
 
@@ -38,13 +39,13 @@ All handled easily with the [Lightning Apps framework](https://lightning.ai/ligh
 
 To run TLDR, paste the following code snippet in a file `app.py`:
 
-
 ```python
 # !pip install git+https://github.com/Lightning-AI/LAI-TLDR-Component git+https://github.com/Lightning-AI/lightning-LLMs
 # !curl https://raw.githubusercontent.com/Shivanandroy/T5-Finetuning-PyTorch/main/data/news_summary.csv --create-dirs -o ${HOME}/data/summary/news.csv -C -
 
 import lightning as L
-import os; from transformers import T5ForConditionalGeneration, T5TokenizerFast as T5Tokenizer
+import os
+from transformers import T5ForConditionalGeneration, T5TokenizerFast as T5Tokenizer
 
 from lit_llms.tensorboard import (
     DriveTensorBoardLogger,
@@ -70,23 +71,34 @@ class TLDR(L.LightningWork):
         # --------------------
         model_type = "t5-base"
         t5_tokenizer = T5Tokenizer.from_pretrained(model_type)
-        t5_model = T5ForConditionalGeneration.from_pretrained(model_type, return_dict=True)
+        t5_model = T5ForConditionalGeneration.from_pretrained(
+            model_type, return_dict=True
+        )
 
         lightning_module = TLDRLightningModule(t5_model, tokenizer=t5_tokenizer)
 
         # -------------------
         # CONFIGURE YOUR DATA
         # -------------------
-        data_module = TLDRDataModule(os.path.expanduser("~/data/summary/news.csv"), t5_tokenizer)
+        data_module = TLDRDataModule(
+            os.path.expanduser("~/data/summary/news.csv"), t5_tokenizer
+        )
 
         # -----------------
         # RUN YOUR TRAINING
         # -----------------
-        strategy = "deepspeed_stage_3_offload" if L.app.utilities.cloud.is_running_in_cloud() else "ddp"
+        strategy = (
+            "deepspeed_stage_3_offload"
+            if L.app.utilities.cloud.is_running_in_cloud()
+            else "ddp"
+        )
         trainer = L.Trainer(
-            max_epochs=2, limit_train_batches=250,
-            precision=16, strategy=strategy,
-            callbacks=default_callbacks(), log_every_n_steps=1,
+            max_epochs=2,
+            limit_train_batches=250,
+            precision=16,
+            strategy=strategy,
+            callbacks=default_callbacks(),
+            log_every_n_steps=1,
             logger=DriveTensorBoardLogger(save_dir=".", drive=self.tensorboard_drive),
         )
         trainer.fit(lightning_module, data_module)
@@ -110,7 +122,9 @@ class TLDR(L.LightningWork):
 
 app = L.LightningApp(
     MultiNodeLightningTrainerWithTensorboard(
-        TLDR, num_nodes=2, cloud_compute=L.CloudCompute("gpu-fast-multi", disk_size=50),
+        TLDR,
+        num_nodes=2,
+        cloud_compute=L.CloudCompute("gpu-fast-multi", disk_size=50),
     )
 )
 ```

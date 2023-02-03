@@ -20,23 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Code in this file is based on https://github.com/Shivanandroy/simpleT5 by Shivanand Roy
-"""
+"""Code in this file is based on https://github.com/Shivanandroy/simpleT5 by Shivanand Roy."""
 
-from typing import Optional
+import os
 
 import pandas as pd
-import os
-import urllib.request
-from lightning.pytorch import LightningDataModule, LightningModule
+from lightning.pytorch import LightningDataModule
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, Dataset
-from transformers import PreTrainedTokenizer, T5ForConditionalGeneration
+from transformers import PreTrainedTokenizer
 
 
 class SummarizationDataset(Dataset):
-    """PyTorch Dataset class"""
+    """PyTorch Dataset class."""
 
     def __init__(
         self,
@@ -48,7 +44,7 @@ class SummarizationDataset(Dataset):
         """
         initiates a PyTorch Dataset Module for input data
         Args:
-            data (pd.DataFrame): input pandas dataframe. Dataframe must have 2 column --> "source_text" and "target_text"
+            data (pd.DataFrame): input pandas dataframe. Dataframe must have 2 column -> "source_text" and "target_text"
             tokenizer (PreTrainedTokenizer): a PreTrainedTokenizer (T5Tokenizer, MT5Tokenizer, or ByT5Tokenizer)
             source_max_token_len (int, optional): max token length of source text. Defaults to 512.
             target_max_token_len (int, optional): max token length of target text. Defaults to 512.
@@ -59,11 +55,11 @@ class SummarizationDataset(Dataset):
         self.target_max_token_len = target_max_token_len
 
     def __len__(self):
-        """returns length of data"""
+        """returns length of data."""
         return len(self.data)
 
     def __getitem__(self, index: int):
-        """returns dictionary of input tensors to feed into T5/MT5 model"""
+        """returns dictionary of input tensors to feed into T5/MT5 model."""
 
         data_row = self.data.iloc[index]
         source_text = data_row["source_text"]
@@ -102,7 +98,7 @@ class SummarizationDataset(Dataset):
 
 
 class TLDRDataModule(LightningDataModule):
-    """PyTorch Lightning data class"""
+    """PyTorch Lightning data class."""
 
     def __init__(
         self,
@@ -116,8 +112,8 @@ class TLDRDataModule(LightningDataModule):
         """
         initiates a PyTorch Lightning Data Module
         Args:
-            train_df (pd.DataFrame): training dataframe. Dataframe must contain 2 columns --> "source_text" & "target_text"
-            test_df (pd.DataFrame): validation dataframe. Dataframe must contain 2 columns --> "source_text" & "target_text"
+            train_df (pd.DataFrame): train dataframe. Dataframe must contain 2 columns -> "source_text" & "target_text"
+            test_df (pd.DataFrame): val dataframe. Dataframe must contain 2 columns -> "source_text" & "target_text"
             tokenizer (PreTrainedTokenizer): PreTrainedTokenizer (T5Tokenizer, MT5Tokenizer, or ByT5Tokenizer)
             batch_size (int, optional): batch size. Defaults to 4.
             source_max_token_len (int, optional): max token length of source text. Defaults to 512.
@@ -174,7 +170,7 @@ class TLDRDataModule(LightningDataModule):
         )
 
     def train_dataloader(self):
-        """training dataloader"""
+        """training dataloader."""
         return DataLoader(
             self.train_dataset,
             batch_size=self.batch_size,
@@ -183,7 +179,7 @@ class TLDRDataModule(LightningDataModule):
         )
 
     def test_dataloader(self):
-        """test dataloader"""
+        """test dataloader."""
         return DataLoader(
             self.test_dataset,
             batch_size=self.batch_size,
@@ -192,7 +188,7 @@ class TLDRDataModule(LightningDataModule):
         )
 
     def val_dataloader(self):
-        """validation dataloader"""
+        """validation dataloader."""
         return DataLoader(
             self.val_dataset,
             batch_size=self.batch_size,

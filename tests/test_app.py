@@ -120,6 +120,3 @@ def test_app_locally():
     # TODO: find a way to collect stdout and stderr outputs of multiprocessing to assert expected logs
     # logs = ...
     # assert_logs(logs)
-
-
-
