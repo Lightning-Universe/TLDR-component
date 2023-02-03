@@ -109,8 +109,7 @@ def assert_logs(logs):
 @pytest.mark.skipif(not bool(int(os.environ.get('SLOW_TEST', '0'))), reason='Skipping Slow Test by default')
 def test_app_locally():
     logging.basicConfig(level=logging.INFO, handlers=[logging.StreamHandler(sys.stdout)])
-    app = LightningTestApp(
-        # lightning.app.components.LightningTrainerMultiNode(
+    app = lightning.app.LightningApp(
         MultiNodeLightningTrainerWithTensorboard(
             DummyTLDR, num_nodes=2, cloud_compute=lightning.CloudCompute("gpu-fast-multi", disk_size=50),
         )

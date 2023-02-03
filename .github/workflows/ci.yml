@@ -24,7 +24,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ['macOS-11', "ubuntu-20.04"]
-        python-version: ['3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.8', '3.9', '3.10']
 
     steps:
     - uses: actions/checkout@v3
@@ -63,7 +63,7 @@ jobs:
 
     - name: Testing
       # NOTE: do not include coverage report here, see: https://github.com/nedbat/coveragepy/issues/1003
-      run: coverage run --source lai_tldr -m pytest tests -v --durations=50 --junitxml=results-${{ runner.os }}-py${{ matrix.python-version }}.xml
+      run: SLOW_TEST=1 coverage run --source lai_tldr -m pytest tests -v --durations=50 --junitxml=results-${{ runner.os }}-py${{ matrix.python-version }}.xml
 
     - name: Upload pytest results
       if: failure()
