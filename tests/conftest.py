@@ -1,8 +1,9 @@
 import os
 import shutil
+import signal
 import threading
 from threading import Thread
-import signal
+
 import psutil
 import pytest
 from lightning.app.storage.path import _storage_root_dir
