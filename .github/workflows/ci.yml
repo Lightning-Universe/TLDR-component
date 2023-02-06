@@ -63,7 +63,7 @@ jobs:
 
     - name: Testing
       # NOTE: do not include coverage report here, see: https://github.com/nedbat/coveragepy/issues/1003
-      run: SLOW_TEST=1 coverage run --source lai_tldr -m pytest tests -v --durations=50 --junitxml=results-${{ runner.os }}-py${{ matrix.python-version }}.xml
+      run: SLOW_TEST=1 coverage run --source lai_tldr -m pytest tests --durations=50 --junitxml=results-${{ runner.os }}-py${{ matrix.python-version }}.xml --full-trace -vvv
 
     - name: Upload pytest results
       if: failure()

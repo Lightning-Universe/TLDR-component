@@ -106,7 +106,7 @@ def assert_logs(logs):
     for curr_str in expected_strings:
         assert curr_str in logs
 
-@pytest.mark.skipif(not bool(int(os.environ.get('SLOW_TEST', '0'))), reason='Skipping Slow Test by default')
+# @pytest.mark.skipif(not bool(int(os.environ.get('SLOW_TEST', '0'))), reason='Skipping Slow Test by default')
 def test_app_locally():
     logging.basicConfig(level=logging.INFO, handlers=[logging.StreamHandler(sys.stdout)])
     app = lightning.app.LightningApp(
