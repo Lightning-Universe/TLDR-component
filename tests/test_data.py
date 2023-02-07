@@ -1,14 +1,11 @@
 import os.path
-import string
 import random
+import string
 
-import torch
 import pandas as pd
+import torch
 
-from lai_tldr.data import (
-    SummarizationDataset,
-    TLDRDataModule,
-)
+from lai_tldr.data import SummarizationDataset, TLDRDataModule
 
 
 class BoringTokenizer:
@@ -54,7 +51,9 @@ def test_summarization_dataset():
 
 
 def test_textsummarization_datamodule(tmpdir):
-    printable = string.ascii_lowercase + string.ascii_uppercase + string.ascii_letters + " "
+    printable = (
+        string.ascii_lowercase + string.ascii_uppercase + string.ascii_letters + " "
+    )
     data = {
         "source_text": [
             "".join(random.choice(printable) for i in range(10)) for _ in range(100)
