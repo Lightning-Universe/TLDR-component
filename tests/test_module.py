@@ -1,8 +1,7 @@
 import os
 import string
-from collections import namedtuple
+from argparse import Namespace
 from random import choice
-from time import sleep
 
 import lightning as L
 import pandas as pd
@@ -11,8 +10,6 @@ import torch
 
 from lai_tldr import TLDRDataModule
 from lai_tldr.module import TLDRLightningModule
-
-return_type = namedtuple("return_type", ("loss", "logits"))
 
 
 class BoringModel(torch.nn.Module):
@@ -23,18 +20,12 @@ class BoringModel(torch.nn.Module):
         self.seq_length = target_seq_length
         self.vocab_size = vocab_size
 
-    def forward(self, input_ids, labels=None, **kwargs):
+    def forward(self, input_ids, **kwargs):
         # mimic source_seq_length -> target_seq_length by truncation
         logits = self.layer2(self.wte(input_ids))[:, : self.seq_length, :]
-        if labels is None:
-            loss = None
-        else:
-            loss = torch.nn.functional.cross_entropy(
-                logits.contiguous().view(-1, logits.size(-1)),
-                labels.view(-1),
-                ignore_index=-100,
-            )
-        return return_type(loss, logits)
+
+        loss = logits.sum()
+        return Namespace(loss=loss, logits=logits)
 
     def generate(self, input_ids, num_beams: int = 1, **kwargs):
         return [self(input_ids).logits.argmax(-1)[0].tolist() for _ in range(num_beams)]
