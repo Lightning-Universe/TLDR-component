@@ -1,5 +1,4 @@
 data/*
 .git
 *.egg-info
-tests/
 .shared/
