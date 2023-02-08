@@ -1,8 +1,5 @@
 import logging
-import os
 import sys
-from contextlib import redirect_stdout, redirect_stderr
-import io
 from typing import Union
 
 import lightning
@@ -15,13 +12,11 @@ from lightning.app.utilities.tracer import Tracer
 from lit_llms.tensorboard import (
     MultiNodeLightningTrainerWithTensorboard,
 )
-from lightning.app.runners import MultiProcessRuntime
 
 from transformers import T5ForConditionalGeneration, T5TokenizerFast as T5Tokenizer
 
 from lai_tldr import TLDRLightningModule
 from tests.test_module import BoringModel
-from lightning.app.testing import LightningTestApp
 
 class DummyTLDR(TLDR):
     boring_model=True
