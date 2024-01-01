@@ -19,7 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 """Code in this file is based on https://github.com/Shivanandroy/simpleT5 by Shivanand Roy."""
 
 from lightning.pytorch import LightningModule
@@ -42,7 +41,7 @@ class TLDRLightningModule(LightningModule):
         self.save_only_last_epoch = False
 
     def forward(self, input_ids, attention_mask, decoder_attention_mask, labels=None):
-        """forward step."""
+        """Forward step."""
         output = self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -53,7 +52,7 @@ class TLDRLightningModule(LightningModule):
         return output.loss, output.logits
 
     def training_step(self, batch, batch_idx):
-        """training step."""
+        """Training step."""
         input_ids = batch["source_text_input_ids"]
         attention_mask = batch["source_text_attention_mask"]
         labels = batch["labels"]
@@ -70,7 +69,7 @@ class TLDRLightningModule(LightningModule):
         return loss
 
     def validation_step(self, batch, batch_idx):
-        """validation step."""
+        """Validation step."""
         input_ids = batch["source_text_input_ids"]
         attention_mask = batch["source_text_attention_mask"]
         labels = batch["labels"]
@@ -86,7 +85,7 @@ class TLDRLightningModule(LightningModule):
         self.log("val_loss", loss, prog_bar=True)
 
     def test_step(self, batch, batch_idx):
-        """test step."""
+        """Test step."""
         input_ids = batch["source_text_input_ids"]
         attention_mask = batch["source_text_attention_mask"]
         labels = batch["labels"]
@@ -102,7 +101,7 @@ class TLDRLightningModule(LightningModule):
         self.log("test_loss", loss, prog_bar=True)
 
     def configure_optimizers(self):
-        """configure optimizers."""
+        """Configure optimizers."""
         return AdamW(self.parameters(), lr=0.0001)
 
 

@@ -19,7 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 """Code in this file is based on https://github.com/Shivanandroy/simpleT5 by Shivanand Roy."""
 
 import os
@@ -55,11 +54,11 @@ class SummarizationDataset(Dataset):
         self.target_max_token_len = target_max_token_len
 
     def __len__(self):
-        """returns length of data."""
+        """Returns length of data."""
         return len(self.data)
 
     def __getitem__(self, index: int):
-        """returns dictionary of input tensors to feed into T5/MT5 model."""
+        """Returns dictionary of input tensors to feed into T5/MT5 model."""
 
         data_row = self.data.iloc[index]
         source_text = data_row["source_text"]
@@ -170,7 +169,7 @@ class TLDRDataModule(LightningDataModule):
         )
 
     def train_dataloader(self):
-        """training dataloader."""
+        """Training dataloader."""
         return DataLoader(
             self.train_dataset,
             batch_size=self.batch_size,
@@ -179,7 +178,7 @@ class TLDRDataModule(LightningDataModule):
         )
 
     def test_dataloader(self):
-        """test dataloader."""
+        """Test dataloader."""
         return DataLoader(
             self.test_dataset,
             batch_size=self.batch_size,
@@ -188,7 +187,7 @@ class TLDRDataModule(LightningDataModule):
         )
 
     def val_dataloader(self):
-        """validation dataloader."""
+        """Validation dataloader."""
         return DataLoader(
             self.val_dataset,
             batch_size=self.batch_size,

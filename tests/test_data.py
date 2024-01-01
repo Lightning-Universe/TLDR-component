@@ -28,7 +28,6 @@ def test_summarization_dataset():
 
     counter = 0
     for sample in dset:
-
         assert isinstance(sample, dict)
         keys = list(sample.keys())
 
